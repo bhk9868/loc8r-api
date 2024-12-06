@@ -13,7 +13,7 @@ require('./app_api/config/passport'); // Configuration after the database models
 //var usersRouter = require('./app_api/models/users');
 //const indexRouter = require('./app_server/routes/index');
 const apiRouter = require('./app_api/routes/index');
-const cors = require('cors');
+
 
 //app.use('/', indexRouter);
 
