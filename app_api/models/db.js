@@ -51,3 +51,4 @@ process.once('SIGUSR2', function () {
   });
 
   require('./locations');
+  require('./users');

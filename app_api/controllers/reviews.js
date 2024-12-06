@@ -1,60 +1,82 @@
 const mongoose = require('mongoose');
 const Loc = mongoose.model('Locations');
+const User = mongoose.model('User');
+
+const getAuthor = async (req, res, callback) => {
+  if (req.auth && req.auth.email) {
+      try {
+          const user = await User.findOne({ email: req.auth.email }).exec();
+          if (!user) {
+              return res.status(404).json({ "message": "User not found" });
+          }
+          callback(req, res, user.name);
+      } catch (err) {
+          console.error(err);
+          return res.status(500).json({ "message": "An error occurred", "error": err });
+      }
+  } else {
+      return res.status(404).json({ "message": "User not found" });
+  }
+};
+
 
 const reviewsCreate = async (req, res) => {
-    const locationId = req.params.locationid;
-    if (locationId) {
-      try {
-        const location = await Loc.findById(locationId).select('reviews').exec();
-        if (!location) {
+  getAuthor(req, res, async (req, res, userName) => {
+      const locationId = req.params.locationid;
+      if (locationId) {
+          try {
+              const location = await Loc.findById(locationId).select('reviews').exec();
+              if (!location) {
+                  res
+                      .status(404)
+                      .json({ "message": "Location not found" });
+              } else {
+                  doAddReview(req, res, location, userName);
+              }
+          } catch (err) {
+              res
+                  .status(400)
+                  .json(err);
+          }
+      } else {
           res
-            .status(404)
-            .json({ "message": "Location not found" });
-        } else {
-          doAddReview(req, res, location);
-        }
-      } catch (err) {
-        res
-          .status(400)
-          .json(err);
+              .status(404)
+              .json({ "message": "Location not found" });
       }
-    } else {
-      res
-        .status(404)
-        .json({ "message": "Location not found" });
-    }
+  });
 };
 
 
 
 
-const doAddReview = async (req, res, location) => {
+
+
+
+
+const doAddReview = async (req, res, location, author) => {
   if (!location) {
-    res
-      .status(404)
-      .json({ "message": "Location not found" });
-  } else {
-    const { author, rating, reviewText } = req.body;
-    location.reviews.push({
+      return res.status(404).json({ "message": "Location not found" });
+  }
+
+  const { rating, reviewText } = req.body;
+  location.reviews.push({
       author,
       rating,
       reviewText
-    });
+  });
 
-    try {
-      const updatedLocation = await location.save(); // Promise 사용
-      updateAverageRating(updatedLocation._id); // 평균 평점 업데이트
-      const thisReview = updatedLocation.reviews.slice(-1).pop(); // 마지막으로 추가된 리뷰 반환
-      res
-        .status(201)
-        .json(thisReview);
-    } catch (err) {
-      res
-        .status(400)
-        .json(err);
-    }
+  try {
+      const updatedLocation = await location.save();
+      updateAverageRating(updatedLocation._id);
+      const thisReview = updatedLocation.reviews.slice(-1).pop();
+      return res.status(201).json(thisReview);
+  } catch (err) {
+      console.error(err);
+      return res.status(400).json(err);
   }
 };
+
+
 
 
 
