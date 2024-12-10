@@ -20,13 +20,6 @@ const apiRouter = require('./app_api/routes/index');
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on http://0.0.0.0:${PORT}`);
-});
-
-
 
 const cors = require('cors');
 const corsOptions = {
