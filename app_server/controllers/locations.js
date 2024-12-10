@@ -69,7 +69,7 @@ const renderDetailPage = function (req, res, location) {
       space to sit down with your laptop and get some work done.',
       callToAction: "If you've been and you like if - or if you \
         don't - please leave a review to help other people just like you. \
-        2019225019 백한국"
+        유병휘/2019250030"
     },
     location
   });
