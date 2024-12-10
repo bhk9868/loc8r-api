@@ -118,7 +118,16 @@ app.use(function(req, res, next) {
 });
 
 
+const PORT = process.env.PORT || 3000;
 
+app.get('/', (req, res) => {
+  res.send('Hello, Render!');
+});
+
+// 포트를 열고 모든 IP 주소에서 요청을 받도록 설정
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 
 module.exports = app;
